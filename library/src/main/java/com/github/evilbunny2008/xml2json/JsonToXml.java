@@ -229,16 +229,14 @@ public class JsonToXml
             Object object = json.opt(key);
             if(object != null)
 			{
-                if(object instanceof JSONObject)
+                if(object instanceof JSONObject subObject)
 				{
-                    JSONObject subObject = (JSONObject) object;
-                    String path = node.getPath() + "/" + key;
+					String path = node.getPath() + "/" + key;
                     Node subNode = new Node(key, path);
                     node.addChild(subNode);
                     prepareObject(subNode, subObject);
-                } else if(object instanceof JSONArray) {
-                    JSONArray array = (JSONArray) object;
-                    prepareArray(node, key, array);
+                } else if(object instanceof JSONArray array) {
+	                prepareArray(node, key, array);
                 } else {
                     String path = node.getPath() + "/" + key;
                     // JSON numbers are represented either Integer or Double (IEEE 754)
@@ -290,13 +288,11 @@ public class JsonToXml
             Object object = array.opt(i);
             if(object != null)
 			{
-                if(object instanceof JSONObject)
+                if(object instanceof JSONObject jsonObject)
 				{
-                    JSONObject jsonObject = (JSONObject) object;
-                    prepareObject(subNode, jsonObject);
-                } else if(object instanceof JSONArray) {
-                    JSONArray subArray = (JSONArray) object;
-                    prepareArray(subNode, key, subArray);
+					prepareObject(subNode, jsonObject);
+                } else if(object instanceof JSONArray subArray) {
+	                prepareArray(subNode, key, subArray);
                 } else {
                     String value = object.toString();
                     subNode.setName(key);

@@ -3,10 +3,9 @@ package com.github.evilbunny2008.xml2json;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.text.Editable;
 import android.util.Log;
 
-@SuppressWarnings({"unused","SameParameterValue", "FieldCanBeLocal"})
+@SuppressWarnings({"unused","SameParameterValue"})
 class Common
 {
 	static final private boolean debug_on = true;

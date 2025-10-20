@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,8 +45,9 @@ import androidx.annotation.Nullable;
  * Converts XML to JSON
  */
 
-public class XmlToJson {
-
+@SuppressWarnings({"unused", "SameParameterValue", "ConstantConditions"})
+public class XmlToJson
+{
     private static final String TAG = "XmlToJson";
     private static final String DEFAULT_CONTENT_NAME = "content";
     private static final String DEFAULT_ENCODING = "utf-8";
@@ -67,13 +69,13 @@ public class XmlToJson {
         private StringReader mStringSource;
         private InputStream mInputStreamSource;
         private String mInputEncoding = DEFAULT_ENCODING;
-        private HashSet<String> mForceListPaths = new HashSet<>();
-        private HashSet<Pattern> mForceListPatterns = new HashSet<>();
-        private HashMap<String, String> mAttributeNameReplacements = new HashMap<>();
-        private HashMap<String, String> mContentNameReplacements = new HashMap<>();
-        private HashMap<String, Class> mForceClassForPath = new HashMap<>();    // Integer, Long, Double, Boolean
-        private HashSet<String> mSkippedAttributes = new HashSet<>();
-        private HashSet<String> mSkippedTags = new HashSet<>();
+        private final HashSet<String> mForceListPaths = new HashSet<>();
+        private final HashSet<Pattern> mForceListPatterns = new HashSet<>();
+        private final HashMap<String, String> mAttributeNameReplacements = new HashMap<>();
+        private final HashMap<String, String> mContentNameReplacements = new HashMap<>();
+        private final HashMap<String, Class<?>> mForceClassForPath = new HashMap<>();
+        private final HashSet<String> mSkippedAttributes = new HashSet<>();
+        private final HashSet<String> mSkippedTags = new HashSet<>();
 
         /**
          * Constructor
@@ -216,17 +218,17 @@ public class XmlToJson {
         }
     }
 
-    private StringReader mStringSource;
-    private InputStream mInputStreamSource;
-    private String mInputEncoding;
-    private HashSet<String> mForceListPaths;
-    private HashSet<Pattern> mForceListPatterns = new HashSet<>();
-    private HashMap<String, String> mAttributeNameReplacements;
-    private HashMap<String, String> mContentNameReplacements;
-    private HashMap<String, Class> mForceClassForPath;
-    private HashSet<String> mSkippedAttributes = new HashSet<>();
-    private HashSet<String> mSkippedTags = new HashSet<>();
-    private JSONObject mJsonObject; // Used for caching the result
+    private final StringReader mStringSource;
+    private final InputStream mInputStreamSource;
+    private final String mInputEncoding;
+    private final HashSet<String> mForceListPaths;
+    private final HashSet<Pattern> mForceListPatterns;
+    private final HashMap<String, String> mAttributeNameReplacements;
+    private final HashMap<String, String> mContentNameReplacements;
+    private static HashMap<String, Class<?>> mForceClassForPath;
+    private final HashSet<String> mSkippedAttributes;
+    private final HashSet<String> mSkippedTags;
+    private final JSONObject mJsonObject;
 
     private XmlToJson(Builder builder) {
         mStringSource = builder.mStringSource;
@@ -274,7 +276,7 @@ public class XmlToJson {
 
             return convertTagToJson(parentTag, false);
         } catch (XmlPullParserException | IOException e) {
-            e.printStackTrace();
+            Common.doStackOutput(e);
             return null;
         }
     }
@@ -284,13 +286,13 @@ public class XmlToJson {
             try {
                 xpp.setInput(mStringSource);
             } catch (XmlPullParserException e) {
-                e.printStackTrace();
+                Common.doStackOutput(e);
             }
         } else {
             try {
                 xpp.setInput(mInputStreamSource, mInputEncoding);
             } catch (XmlPullParserException e) {
-                e.printStackTrace();
+                Common.doStackOutput(e);
             }
         }
     }
@@ -349,15 +351,23 @@ public class XmlToJson {
                 }
             } while (eventType != XmlPullParser.END_DOCUMENT);
         } catch (XmlPullParserException | IOException | NullPointerException e) {
-            e.printStackTrace();
+            Common.doStackOutput(e);
         }
     }
 
-    private JSONObject convertTagToJson(Tag tag, boolean isListElement) {
+	@SuppressWarnings("all")
+	Tag getFirst(ArrayList<Tag> group)
+	{
+		return group.get(0);
+	}
+
+    private JSONObject convertTagToJson(Tag tag, boolean isListElement)
+    {
         JSONObject json = new JSONObject();
 
         // Content is injected as a key/value
-        if (tag.getContent() != null) {
+        if (tag.getContent() != null)
+		{
             String path = tag.getPath();
             String name = getContentNameReplacement(path, DEFAULT_CONTENT_NAME);
             putContent(path, json, name, tag.getContent());
@@ -369,7 +379,7 @@ public class XmlToJson {
             for (ArrayList<Tag> group : groups.values()) {
 
                 if (group.size() == 1) {    // element, or list of 1
-                    Tag child = group.get(0);
+                    Tag child = getFirst(group);
                     if (isForcedList(child)) {  // list of 1
                         JSONArray list = new JSONArray();
                         list.put(convertTagToJson(child, true));
@@ -389,14 +399,14 @@ public class XmlToJson {
                     for (Tag child : group) {
                         list.put(convertTagToJson(child, true));
                     }
-                    String childrenNames = group.get(0).getName();
+                    String childrenNames = getFirst(group).getName();
                     json.put(childrenNames, list);
                 }
             }
             return json;
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            Common.doStackOutput(e);
         }
         return null;
     }
@@ -404,7 +414,7 @@ public class XmlToJson {
     private void putContent(String path, JSONObject json, String tag, String content) {
         try {
             // checks if the user wants to force a class (Int, Double... for a given path)
-            Class forcedClass = mForceClassForPath.get(path);
+            Class<?> forcedClass = mForceClassForPath.get(path);
             if (forcedClass == null) {  // default behaviour, put it as a String
                 if (content == null) {
                     content = DEFAULT_EMPTY_STRING;
@@ -480,6 +490,7 @@ public class XmlToJson {
         return defaultValue;
     }
 
+    @NonNull
     @Override
     public String toString() {
         if (mJsonObject != null) {
@@ -495,12 +506,9 @@ public class XmlToJson {
      *                           if null, use the default 3 spaces indentation
      * @return the formatted Json
      */
-    public String toFormattedString(@Nullable String indentationPattern) {
-        if (indentationPattern == null) {
-            mIndentationPattern = DEFAULT_INDENTATION;
-        } else {
-            mIndentationPattern = indentationPattern;
-        }
+    public String toFormattedString(@Nullable String indentationPattern)
+    {
+	    mIndentationPattern = Objects.requireNonNullElse(indentationPattern, DEFAULT_INDENTATION);
         return toFormattedString();
     }
 
@@ -510,8 +518,10 @@ public class XmlToJson {
      *
      * @return the Builder
      */
-    public String toFormattedString() {
-        if (mJsonObject != null) {
+    public String toFormattedString()
+    {
+        if (mJsonObject != null)
+		{
             String indent = "";
             StringBuilder builder = new StringBuilder();
             builder.append("{\n");
@@ -519,12 +529,15 @@ public class XmlToJson {
             builder.append("}\n");
             return builder.toString();
         }
+
         return null;
     }
 
-    private void format(JSONObject jsonObject, StringBuilder builder, String indent) {
+    private void format(JSONObject jsonObject, StringBuilder builder, String indent)
+    {
         Iterator<String> keys = jsonObject.keys();
-        while (keys.hasNext()) {
+        while (keys.hasNext())
+		{
             String key = keys.next();
             builder.append(indent);
             builder.append(mIndentationPattern);
@@ -532,17 +545,15 @@ public class XmlToJson {
             builder.append(key);
             builder.append("\": ");
             Object value = jsonObject.opt(key);
-            if (value instanceof JSONObject) {
-                JSONObject child = (JSONObject) value;
-                builder.append(indent);
+            if (value instanceof JSONObject child) {
+	            builder.append(indent);
                 builder.append("{\n");
                 format(child, builder, indent + mIndentationPattern);
                 builder.append(indent);
                 builder.append(mIndentationPattern);
                 builder.append("}");
-            } else if (value instanceof JSONArray) {
-                JSONArray array = (JSONArray) value;
-                formatArray(array, builder, indent + mIndentationPattern);
+            } else if (value instanceof JSONArray array) {
+	            formatArray(array, builder, indent + mIndentationPattern);
             } else {
                 formatValue(value, builder);
             }
@@ -559,18 +570,16 @@ public class XmlToJson {
 
         for (int i = 0; i < array.length(); ++i) {
             Object element = array.opt(i);
-            if (element instanceof JSONObject) {
-                JSONObject child = (JSONObject) element;
-                builder.append(indent);
+            if (element instanceof JSONObject child) {
+	            builder.append(indent);
                 builder.append(mIndentationPattern);
                 builder.append("{\n");
                 format(child, builder, indent + mIndentationPattern);
                 builder.append(indent);
                 builder.append(mIndentationPattern);
                 builder.append("}");
-            } else if (element instanceof JSONArray) {
-                JSONArray child = (JSONArray) element;
-                formatArray(child, builder, indent + mIndentationPattern);
+            } else if (element instanceof JSONArray child) {
+	            formatArray(child, builder, indent + mIndentationPattern);
             } else {
                 formatValue(element, builder);
             }
@@ -584,34 +593,34 @@ public class XmlToJson {
     }
 
     private void formatValue(Object value, StringBuilder builder) {
-        if (value instanceof String) {
-            String string = (String) value;
+	    switch (value)
+	    {
+		    case String s ->
+		    {
+			    String string = s;
 
-            // Escape special characters
-            string = string.replaceAll("\\\\", "\\\\\\\\");                     // escape backslash
-            string = string.replaceAll("\"", Matcher.quoteReplacement("\\\"")); // escape double quotes
-            string = string.replaceAll("/", "\\\\/");                           // escape slash
-            string = string.replaceAll("\n", "\\\\n").replaceAll("\t", "\\\\t");  // escape \n and \t
-            string = string.replaceAll("\r", "\\\\r");  // escape \r
+			    // Escape special characters
+			    string = string.replaceAll("\\\\", "\\\\\\\\");                     // escape backslash
 
-            builder.append("\"");
-            builder.append(string);
-            builder.append("\"");
-        } else if (value instanceof Long) {
-            Long longValue = (Long) value;
-            builder.append(longValue);
-        } else if (value instanceof Integer) {
-            Integer intValue = (Integer) value;
-            builder.append(intValue);
-        } else if (value instanceof Boolean) {
-            Boolean bool = (Boolean) value;
-            builder.append(bool);
-        } else if (value instanceof Double) {
-            Double db = (Double) value;
-            builder.append(db);
-        } else {
-            builder.append(value.toString());
-        }
+			    string = string.replaceAll("\"", Matcher.quoteReplacement("\\\"")); // escape double quotes
+
+			    string = string.replaceAll("/", "\\\\/");                           // escape slash
+
+			    string = string.replaceAll("\n", "\\\\n").replaceAll("\t", "\\\\t");  // escape \n and \t
+
+			    string = string.replaceAll("\r", "\\\\r");  // escape \r
+
+
+			    builder.append("\"");
+			    builder.append(string);
+			    builder.append("\"");
+		    }
+		    case Long longValue -> builder.append(longValue);
+		    case Integer intValue -> builder.append(intValue);
+		    case Boolean bool -> builder.append(bool);
+		    case Double db -> builder.append(db);
+		    default -> builder.append(value);
+	    }
     }
 
 }

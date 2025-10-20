@@ -2,12 +2,12 @@ plugins {
 	id "com.android.library"
 	id "maven-publish"
 }
-/*
+
 afterEvaluate {
 	publishing {
 		publications {
 			release(MavenPublication) {
-				from components.release
+				from components.findByName("release")
 				groupId = "com.github.evilbunny2008"
 				artifactId = "xml2json"
 				version = "2.0.0"
@@ -15,47 +15,46 @@ afterEvaluate {
 		}
 	}
 }
-*/
+
 android {
     compileSdk = 36
     defaultConfig {
         minSdk = 23
         targetSdk = 36
-	    version = "2.0.0"
+//	    version = "2.0.0"
         versionCode = 2000000
-	    versionName 'Xml2JSON'
+//	    versionName = "Xml2JSON"
     }
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_21
+		targetCompatibility JavaVersion.VERSION_21
+	}
+
+	tasks.withType(JavaCompile).configureEach {
+		options.compilerArgs += ["-Xlint:deprecation"]
+	}
+
+	publishing {
+		singleVariant("release") {
+			withSourcesJar()
+		}
+	}
 
 	buildTypes {
 		release {
 			minifyEnabled = false
 			shrinkResources = false
 			proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-			debuggable true
-			jniDebuggable true
-			renderscriptDebuggable true
 		}
 
 		debug {
 			minifyEnabled = false
 			shrinkResources = false
+			debuggable true
+			jniDebuggable true
 		}
-/*
-		compileOptions {
-			sourceCompatibility JavaVersion.VERSION_21
-			targetCompatibility JavaVersion.VERSION_21
-		}
-*/
-		tasks.withType(JavaCompile).configureEach {
-			options.compilerArgs += ["-Xlint:deprecation"]
-		}
-/*
-		publishing {
-			singleVariant("release") {
-				withSourcesJar()
-			}
-		}
-*/
+
 		namespace = "com.github.evilbunny2008.xml2json"
 	}
 }
