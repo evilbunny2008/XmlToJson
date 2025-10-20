@@ -1,4 +1,4 @@
-package com.github.evilbunny2008.xml2json;
+package com.github.evilbunny2008.xmltojson;
 
 @SuppressWarnings("unused")
 class Attribute

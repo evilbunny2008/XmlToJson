@@ -9,7 +9,7 @@ afterEvaluate {
 			release(MavenPublication) {
 				from components.findByName("release")
 				groupId = "com.github.evilbunny2008"
-				artifactId = "xml2json"
+				artifactId = "xmltojson"
 				version = "2.0.0"
 			}
 		}
@@ -21,9 +21,8 @@ android {
     defaultConfig {
         minSdk = 23
         targetSdk = 36
-//	    version = "2.0.0"
         versionCode = 2000000
-//	    versionName = "Xml2JSON"
+	    versionName = "2.0.0"
     }
 
 	compileOptions {

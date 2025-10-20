@@ -1,4 +1,4 @@
-package com.github.evilbunny2008.xml2json;
+package com.github.evilbunny2008.xmltojson;
 
 import android.app.Activity;
 import android.content.Context;

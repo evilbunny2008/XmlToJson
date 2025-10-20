@@ -1,3 +1,4 @@
+package com.github.evilbunny2008.xmltojson;
 /*
     Copyright 2016 Arnaud Guyon
 
@@ -13,7 +14,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-package com.github.evilbunny2008.xml2json;
 
 import android.util.Xml;
 
