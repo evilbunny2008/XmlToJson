@@ -13,69 +13,70 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-package fr.arnaudguyon.xmltojsonlib;
+package com.github.evilbunny2008.xml2json;
 
 import java.util.ArrayList;
 
 /**
  * Used to store data when converting from JSON to XML
  */
-
-/* package */ class Node {
-
-    /* package */ class Attribute {
-        String mKey;
-        String mValue;
-        Attribute(String key, String value) {
-            mKey = key;
-            mValue = value;
-        }
-    }
-
+@SuppressWarnings("unused")
+class Node
+{
     private String mName;
-    private String mPath;
+    private final String mPath;
     private String mContent;
-    private ArrayList<Attribute> mAttributes = new ArrayList<>();
-    private ArrayList<Node> mChildren = new ArrayList<>();
+    private final ArrayList<Attribute> mAttributes = new ArrayList<>();
+    private final ArrayList<Node> mChildren = new ArrayList<>();
 
-    /* package */ Node(String name, String path) {
+    Node(String name, String path)
+    {
         mName = name;
         mPath = path;
     }
 
-    /* package */ void addAttribute(String key, String value) {
+    void addAttribute(String key, String value)
+    {
         mAttributes.add(new Attribute(key, value));
     }
 
-    /* package */ void setContent(String content) {
+    void setContent(String content)
+    {
         mContent = content;
     }
 
-    /* package */ void setName(String name) {
+    void setName(String name)
+    {
         mName = name;
     }
 
-    /* package */ void addChild(Node child) {
+    void addChild(Node child)
+    {
         mChildren.add(child);
     }
 
-    /* package */ ArrayList<Attribute> getAttributes() {
+    ArrayList<Attribute> getAttributes()
+    {
         return mAttributes;
     }
 
-    /* package */ String getContent() {
+    String getContent()
+    {
         return mContent;
     }
 
-    /* package */ ArrayList<Node> getChildren() {
+    ArrayList<Node> getChildren()
+    {
         return mChildren;
     }
 
-    /* package */ String getPath() {
+    String getPath()
+    {
         return mPath;
     }
 
-    /* package */ String getName() {
+    String getName()
+    {
         return mName;
     }
 }

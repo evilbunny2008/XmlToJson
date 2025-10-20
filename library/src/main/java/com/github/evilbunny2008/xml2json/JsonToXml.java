@@ -13,7 +13,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-package fr.arnaudguyon.xmltojsonlib;
+package com.github.evilbunny2008.xml2json;
 
 import android.util.Xml;
 
@@ -45,24 +45,26 @@ import javax.xml.transform.stream.StreamSource;
 /**
  * Converts JSON to XML
  */
-
-public class JsonToXml {
+@SuppressWarnings("unused")
+public class JsonToXml
+{
 
     private static final int DEFAULT_INDENTATION = 3;
     // TODO: Set up Locale in the builder
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
-    public static class Builder {
-
+    public static class Builder
+    {
         private JSONObject mJson;
-        private HashSet<String> mForcedAttributes = new HashSet<>();
-        private HashSet<String> mForcedContent = new HashSet<>();
+        private final HashSet<String> mForcedAttributes = new HashSet<>();
+        private final HashSet<String> mForcedContent = new HashSet<>();
 
         /**
          * Constructor
          * @param jsonObject a JSON object
          */
-        public Builder(@NonNull JSONObject jsonObject) {
+        public Builder(@NonNull JSONObject jsonObject)
+        {
             mJson = jsonObject;
         }
 
@@ -70,7 +72,8 @@ public class JsonToXml {
          * Constructor
          * @param inputStream InputStream containing the JSON
          */
-        public Builder(@NonNull InputStream inputStream) {
+        public Builder(@NonNull InputStream inputStream)
+        {
             this(FileReader.readFileFromInputStream(inputStream));
         }
 
@@ -78,11 +81,13 @@ public class JsonToXml {
          * Constructor
          * @param jsonString String containing the JSON
          */
-        public Builder(String jsonString) {
-            try {
+        public Builder(String jsonString)
+        {
+            try
+            {
                 mJson = new JSONObject(jsonString);
             } catch (JSONException exception) {
-                exception.printStackTrace();
+                Common.doStackOutput(exception);
             }
         }
 
@@ -91,7 +96,8 @@ public class JsonToXml {
          * @param path Path for the attribute, using format like "/parentTag/childTag/childTagAttribute"
          * @return the Builder
          */
-        public Builder forceAttribute(String path) {
+        public Builder forceAttribute(String path)
+        {
             mForcedAttributes.add(path);
             return this;
         }
@@ -101,7 +107,8 @@ public class JsonToXml {
          * @param path Path for the content, using format like "/parentTag/contentTag"
          * @return the Builder
          */
-        public Builder forceContent(String path) {
+        public Builder forceContent(String path)
+        {
             mForcedContent.add(path);
             return this;
         }
@@ -110,16 +117,18 @@ public class JsonToXml {
          * Creates the JsonToXml object
          * @return a JsonToXml instance
          */
-        public JsonToXml build() {
+        public JsonToXml build()
+        {
             return new JsonToXml(mJson, mForcedAttributes, mForcedContent);
         }
     }
 
-    private JSONObject mJson;
-    private HashSet<String> mForcedAttributes;
-    private HashSet<String> mForcedContent;
+    private final JSONObject mJson;
+    private final HashSet<String> mForcedAttributes;
+    private final HashSet<String> mForcedContent;
 
-    private JsonToXml(@NonNull JSONObject jsonObject, @NonNull HashSet<String> forcedAttributes, HashSet<String> forcedContent) {
+    private JsonToXml(@NonNull JSONObject jsonObject, @NonNull HashSet<String> forcedAttributes, HashSet<String> forcedContent)
+    {
         mJson = jsonObject;
         mForcedAttributes = forcedAttributes;
         mForcedContent = forcedContent;
@@ -129,8 +138,10 @@ public class JsonToXml {
      *
      * @return the XML
      */
+    @NonNull
     @Override
-    public String toString() {
+    public String toString()
+    {
         Node rootNode = new Node(null, "");
         prepareObject(rootNode, mJson);
         return nodeToXML(rootNode);
@@ -140,7 +151,8 @@ public class JsonToXml {
      *
      * @return the formatted XML with a default indent (3 spaces)
      */
-    public String toFormattedString() {
+    public String toFormattedString()
+    {
         return toFormattedString(DEFAULT_INDENTATION);
     }
 
@@ -149,9 +161,11 @@ public class JsonToXml {
      * @param indent size of the indent (number of spaces)
      * @return the formatted XML
      */
-    public String toFormattedString(@IntRange(from = 0) int indent) {
+    public String toFormattedString(@IntRange(from = 0) int indent)
+    {
         String input = toString();
-        try {
+        try
+        {
             Source xmlInput = new StreamSource(new StringReader(input));
             StringWriter stringWriter = new StringWriter();
             StreamResult xmlOutput = new StreamResult(stringWriter);
@@ -166,10 +180,12 @@ public class JsonToXml {
         }
     }
 
-    private String nodeToXML(Node node) {
+    private String nodeToXML(Node node)
+    {
         XmlSerializer serializer = Xml.newSerializer();
         StringWriter writer = new StringWriter();
-        try {
+        try
+        {
             serializer.setOutput(writer);
             serializer.startDocument("UTF-8", true);
 
@@ -182,42 +198,45 @@ public class JsonToXml {
         }
     }
 
-    private void nodeToXml(XmlSerializer serializer, Node node) throws IOException {
+    private void nodeToXml(XmlSerializer serializer, Node node) throws IOException
+    {
         String nodeName = node.getName();
-        if (nodeName != null) {
+        if(nodeName != null)
+		{
             serializer.startTag("", nodeName);
 
-            for (Node.Attribute attribute : node.getAttributes()) {
+            for (Attribute attribute : node.getAttributes())
                 serializer.attribute("", attribute.mKey, attribute.mValue);
-            }
+
             String nodeContent = node.getContent();
-            if (nodeContent != null) {
+            if(nodeContent != null)
                 serializer.text(nodeContent);
-            }
         }
 
-        for (Node subNode : node.getChildren()) {
+        for (Node subNode : node.getChildren())
             nodeToXml(serializer, subNode);
-        }
 
-        if (nodeName != null) {
+        if(nodeName != null)
             serializer.endTag("", nodeName);
-        }
     }
 
-    private void prepareObject(Node node, JSONObject json) {
+    private void prepareObject(Node node, JSONObject json)
+    {
         Iterator<String> keyterator = json.keys();
-        while (keyterator.hasNext()) {
+        while (keyterator.hasNext())
+		{
             String key = keyterator.next();
             Object object = json.opt(key);
-            if (object != null) {
-                if (object instanceof JSONObject) {
+            if(object != null)
+			{
+                if(object instanceof JSONObject)
+				{
                     JSONObject subObject = (JSONObject) object;
                     String path = node.getPath() + "/" + key;
                     Node subNode = new Node(key, path);
                     node.addChild(subNode);
                     prepareObject(subNode, subObject);
-                } else if (object instanceof JSONArray) {
+                } else if(object instanceof JSONArray) {
                     JSONArray array = (JSONArray) object;
                     prepareArray(node, key, array);
                 } else {
@@ -226,26 +245,30 @@ public class JsonToXml {
                     // Long may be represented in scientific notation because they are stored as Double
                     // This workaround attempts to represent Long and Double objects accordingly
                     String value;
-                    if (object instanceof Double) {
+                    if(object instanceof Double)
+					{
                         double d = (double) object;
                         // If it is a Long
-                        if (d % 1 == 0) {
+                        if(d % 1 == 0)
+						{
                             value = Long.toString((long) d);
                         } else {
                             // TODO: Set up number of decimal digits per attribute in the builder
                             // Set only once. Represent all double numbers up to 20 decimal digits
-                            if (DECIMAL_FORMAT.getMaximumFractionDigits() == 0) {
+                            if(DECIMAL_FORMAT.getMaximumFractionDigits() == 0)
                                 DECIMAL_FORMAT.setMaximumFractionDigits(20);
-                            }
+
                             value = DECIMAL_FORMAT.format(d);
                         }
                     } else {
                         // Integer, Boolean and String are handled here
                         value = object.toString();
                     }
-                    if (isAttribute(path)) {
+
+                    if(isAttribute(path))
+					{
                         node.addAttribute(key, value);
-                    } else if (isContent(path) ) {
+                    } else if(isContent(path) ) {
                         node.setContent(value);
                     } else {
                         Node subNode = new Node(key, node.getPath());
@@ -257,17 +280,21 @@ public class JsonToXml {
         }
     }
 
-    private void prepareArray(Node node, String key, JSONArray array) {
+    private void prepareArray(Node node, String key, JSONArray array)
+    {
         int count = array.length();
         String path = node.getPath() + "/" + key;
-        for (int i = 0; i < count; ++i) {
+        for (int i = 0; i < count; ++i)
+		{
             Node subNode = new Node(key, path);
             Object object = array.opt(i);
-            if (object != null) {
-                if (object instanceof JSONObject) {
+            if(object != null)
+			{
+                if(object instanceof JSONObject)
+				{
                     JSONObject jsonObject = (JSONObject) object;
                     prepareObject(subNode, jsonObject);
-                } else if (object instanceof JSONArray) {
+                } else if(object instanceof JSONArray) {
                     JSONArray subArray = (JSONArray) object;
                     prepareArray(subNode, key, subArray);
                 } else {
@@ -280,11 +307,13 @@ public class JsonToXml {
         }
     }
 
-    private boolean isAttribute(String path) {
+    private boolean isAttribute(String path)
+    {
         return mForcedAttributes.contains(path);
     }
 
-    private boolean isContent(String path) {
+    private boolean isContent(String path)
+    {
         return mForcedContent.contains(path);
     }
 }

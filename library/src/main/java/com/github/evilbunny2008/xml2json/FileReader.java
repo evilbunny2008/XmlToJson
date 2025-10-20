@@ -13,7 +13,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-package fr.arnaudguyon.xmltojsonlib;
+package com.github.evilbunny2008.xml2json;
 
 import android.content.Context;
 
@@ -28,43 +28,56 @@ import java.io.InputStreamReader;
  * Created by arnaud on 03/12/2016.
  */
 
-public class FileReader {
-
-    public static String readFileFromAsset(@NonNull Context context, @NonNull String fileName) {
-        try {
+@SuppressWarnings("unused")
+public class FileReader
+{
+    public static String readFileFromAsset(@NonNull Context context, @NonNull String fileName)
+    {
+        try
+        {
             InputStream inputStream = context.getAssets().open(fileName);
             String result = readFileFromInputStream(inputStream);
             inputStream.close();
+
             return result;
         } catch (IOException e) {
-            e.printStackTrace();    // TODO
+            Common.doStackOutput(e);
         }
+
         return null;
     }
 
-    public static String readFileFromInputStream(@NonNull InputStream inputStream) {
-
+    public static String readFileFromInputStream(@NonNull InputStream inputStream)
+    {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
         StringBuilder result = new StringBuilder();
         String line;
-        try {
-            while ((line = bufferedReader.readLine()) != null) {
+        try
+        {
+            while ((line = bufferedReader.readLine()) != null)
                 result.append(line);
-            }
+
             return result.toString();
         } catch (IOException exception) {
+			Common.doStackOutput(exception);
         } finally {
-            try {
+            try
+            {
                 bufferedReader.close();
             } catch (IOException e2) {
+	            Common.doStackOutput(e2);
             }
-            try {
+
+            try
+            {
                 inputStreamReader.close();
             } catch (IOException e2) {
+	            Common.doStackOutput(e2);
             }
         }
+
         return null;
     }
 }

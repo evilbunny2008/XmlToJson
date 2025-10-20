@@ -2,7 +2,7 @@ plugins {
 	id "com.android.library"
 	id "maven-publish"
 }
-
+/*
 afterEvaluate {
 	publishing {
 		publications {
@@ -15,7 +15,7 @@ afterEvaluate {
 		}
 	}
 }
-
+*/
 android {
     compileSdk = 36
     defaultConfig {
@@ -40,22 +40,22 @@ android {
 			minifyEnabled = false
 			shrinkResources = false
 		}
-
+/*
 		compileOptions {
 			sourceCompatibility JavaVersion.VERSION_21
 			targetCompatibility JavaVersion.VERSION_21
 		}
-
+*/
 		tasks.withType(JavaCompile).configureEach {
 			options.compilerArgs += ["-Xlint:deprecation"]
 		}
-
+/*
 		publishing {
 			singleVariant("release") {
 				withSourcesJar()
 			}
 		}
-
+*/
 		namespace = "com.github.evilbunny2008.xml2json"
 	}
 }

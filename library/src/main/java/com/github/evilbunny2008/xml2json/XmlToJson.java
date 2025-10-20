@@ -1,4 +1,4 @@
-package fr.arnaudguyon.xmltojsonlib;
+package com.github.evilbunny2008.xml2json;
 
 /*
     Copyright 2016 Arnaud Guyon
