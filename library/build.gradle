@@ -10,7 +10,7 @@ afterEvaluate {
 				from components.findByName("release")
 				groupId = "com.github.evilbunny2008"
 				artifactId = "xmltojson"
-				version = "2.0.1"
+				version = "2.0.2"
 			}
 		}
 	}
@@ -19,10 +19,10 @@ afterEvaluate {
 android {
     compileSdk = 36
     defaultConfig {
-        minSdk = 23
+        minSdk = 24
         targetSdk = 36
         versionCode = 2000001
-	    versionName = "2.0.1"
+	    versionName = "2.0.2"
     }
 
 	compileOptions {
@@ -44,7 +44,6 @@ android {
 		release {
 			minifyEnabled = false
 			shrinkResources = false
-			proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
 		}
 
 		debug {
