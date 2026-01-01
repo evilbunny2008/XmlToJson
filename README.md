@@ -1,6 +1,6 @@
 # XML to JSON for Android #
 
-XML to JSON is an Android Studio Library which converts easily **XML to JSON** and **JSON to XML**.
+XML to JSON is an Android library which converts easily **XML to JSON** and **JSON to XML**.
 
 It is fully **configurable** so that you can change for example attribute names.
 
@@ -390,7 +390,7 @@ Add the libary dependency to your **APP** build.gradle file
 
 ```
 dependencies {
-    implementation 'com.github.smart-fun:XmlToJson:1.5.3'    // add this line
+    implementation("com.github.smart-fun:XmlToJson:2.0.2")    // add this line
 }
 ```
 
