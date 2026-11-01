@@ -39,7 +39,7 @@ Then you can convert it to a **JSONObject**, a **String**, or a **Formatted Stri
     String formatted = xmlToJson.toFormattedString();
 ```
 
-Thats' it. Here is an example of XML...
+That's it. Here is an example of XML...
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -196,7 +196,7 @@ Now \<book> is considered as a list:
 
 ### Force a Tag or Attribute to be an Integer / Long / Double / Boolean ###
 
-By default the XML attributes or content are processed as Strings. If you want to force them to be another type (like Integer), then use on of these methods **Builder.forceIntegerForPath**(String path), **Builder.forceLongForPath**(String path), **Builder.forceDoubleForPath**(String path) or **Builder.forceBooleanForPath**(String path).
+By default, the XML attributes or content are processed as Strings. If you want to force them to be another type (like Integer), then use on of these methods **Builder.forceIntegerForPath**(String path), **Builder.forceLongForPath**(String path), **Builder.forceDoubleForPath**(String path) or **Builder.forceBooleanForPath**(String path).
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -235,7 +235,7 @@ public String convertXmlToJson(String xml) {
 ```
 Here "007" and "000" are converted to 7 and 0.
 
-Note that you can use forcexxxForPath methods AND change the attribute or content name for the same path; the methods in the Builder can be combined. The path used in forcexxxForPath methods is the path in the xml before eventually changing its name.
+Note that you can use forcexxxForPath methods AND change the attribute or content name for the same path; the methods in the Builder can be combined. The path used in forcexxxForPath methods is the path in the XML before eventually changing its name.
 
 ### Skip a Tag or an Attribute ###
 
@@ -277,7 +277,7 @@ XmlToJson xmlToJson = new XmlToJson.Builder(xml)
 
 ### Basic usage ###
 
-There are several ways to create a **JsonToXml** object: from a Json **String**, a **JSONObject** or from an **InputStream**.
+There are several ways to create a **JsonToXml** object: from a JSON **String**, a **JSONObject** or from an **InputStream**.
 
 ```java
     JSONObject jsonObject; // some JSONObject previously created
@@ -373,7 +373,7 @@ The result becomes
 
 which is very compact :)
 
-## Installation with gradle ##
+## Installation with Gradle ##
 
 Add the following maven{} line to your **PROJECT** build.gradle file
 
