@@ -21,8 +21,9 @@ android {
     defaultConfig {
         minSdk = 24
         targetSdk = 37
-        versionCode = 2000003
-	    versionName = "2.0.3"
+        versionCode = 2000004
+	    versionName = "2.0.4"
+		consumerProguardFiles("consumer-rules.pro")
     }
 
 	compileOptions {
@@ -43,18 +44,10 @@ android {
 	buildTypes {
 		release {
 			minifyEnabled = false
-			shrinkResources = false
 		}
-
-		debug {
-			minifyEnabled = false
-			shrinkResources = false
-			debuggable true
-			jniDebuggable true
-		}
-
-		namespace = "com.github.evilbunny2008.xml2json"
 	}
+
+	namespace = "com.github.evilbunny2008.xml2json"
 }
 
 dependencies {
